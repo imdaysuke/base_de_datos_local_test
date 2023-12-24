@@ -5,6 +5,8 @@ codigo pyrhon y la base de datos, se importan librerias para poder hacer la cone
 
 # sirven para poder declara valores en las tablas de datos que se crearan para la base de datos
 from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from uuid import uuid4
 # sirve para declara una base de datos
 from sqlalchemy.orm import declarative_base
 # para poder crear relacion en las tablas fimarias y secundarias
@@ -25,6 +27,7 @@ class Usuarios(Base):
     presupuesto = Column(Integer, nullable=False)
     # Relación entre Usuarios y Frutas
     frutas = relationship("Frutas", back_populates="propietario")
+    celulares = relationship("Celulares", back_populates="propietario")
 
 
 # tabla modelo 'Frutas'
@@ -38,6 +41,16 @@ class Frutas(Base):
     # Esto permite acceder a las frutas asociadas a un usuario y viceversa.
     propietario = relationship("Usuarios", back_populates="frutas")
 
+
+class Celulares(Base):
+    __tablename__ = "celulares"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4, unique=True)
+    nombre_celular = Column(String(length=20),nullable=False) # no puede tener valores nulos
+    cantidad_ram = Column(Integer)
+    cantidad_rom = Column(Integer)
+    marca = Column(String(length=20))
+    propietario_id = Column(Integer, ForeignKey("usuarios.id"))
+    propietario = relationship("Usuarios", back_populates="celulares")
 
 # código de creación de tablas debe estar en el mismo archivo o módulo donde defines tus esquemas.
 # se pasa el motor que se importo de db con un bloque de control de exception para saber si se creo o no
