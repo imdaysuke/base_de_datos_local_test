@@ -19,7 +19,13 @@ url=URL(
 # se crea un motor para poder conectarse a la base de datos, usando la coneccion configurada 'url'
 engine = create_engine(url)
 # se trae a sessionmaker, y bind tendra lo de la variable engine 'el motor de la base de datos'
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 # todo lo de las 2 variables anteriores se guardaran y tendran todo en la variable 'session'
-session = Session()
+# session = Session()
 
+def get_db():
+    try:
+        db = Session()
+        yield db
+    finally:
+        db.close()
